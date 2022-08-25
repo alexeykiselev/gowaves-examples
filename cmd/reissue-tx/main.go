@@ -10,47 +10,29 @@ import (
 	"github.com/wavesplatform/gowaves/pkg/proto"
 )
 
-func main() {
-	// Create sender's public key from BASE58 string
-	pk, err := crypto.NewPublicKeyFromBase58("<your-public-key>")
-	if err != nil {
-		panic(err)
-	}
+const waves = 100_000_000
 
+func main() {
 	// Create sender's private key from BASE58 string
 	sk, err := crypto.NewSecretKeyFromBase58("<your-private-key>")
 	if err != nil {
 		panic(err)
 	}
 
-	// Create script's address
-	a, err := proto.NewAddressFromString("<script's address")
+	// Generate public key from secret key
+	pk := crypto.GeneratePublicKey(sk)
+
+	// Current time in milliseconds
+	ts := uint64(time.Now().UnixMilli())
+
+	// Create asset ID from string
+	assetID, err := crypto.NewDigestFromBase58("<your-asset-id-base58>")
 	if err != nil {
 		panic(err)
 	}
 
-	// Create recipient from address
-	rcp := proto.NewRecipientFromAddress(a)
-
-	// Create Function Call that will be passed to the script
-	fc := proto.FunctionCall{
-		Name: "foo",
-		Arguments: proto.Arguments{
-			proto.IntegerArgument{
-				Value: 12345,
-			},
-			proto.BooleanArgument{
-				Value: true,
-			},
-		},
-	}
-
-	// Current time in milliseconds
-	ts := time.Now().Unix() * 1000
-
-	// New InvokeScript Transaction
-	tx := proto.NewUnsignedInvokeScriptWithProofs(3, proto.TestNetScheme, pk, rcp, fc, proto.ScriptPayments{},
-		proto.NewOptionalAssetWaves(), 500_000, uint64(ts))
+	// New Reissue Transaction
+	tx := proto.NewUnsignedReissueWithProofs(3, proto.TestNetScheme, pk, assetID, 100_00, false, ts, 1*waves)
 
 	// Sing the transaction with the private key
 	err = tx.Sign(proto.TestNetScheme, sk)

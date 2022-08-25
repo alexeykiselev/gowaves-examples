@@ -12,13 +12,13 @@ import (
 
 func main() {
 	// Create sender's public key from BASE58 string
-	sender, err := crypto.NewPublicKeyFromBase58("<your-public-key>")
+	pk, err := crypto.NewPublicKeyFromBase58("<your-public-key>")
 	if err != nil {
 		panic(err)
 	}
 
 	// Create sender's private key from BASE58 string
-	pk, err := crypto.NewSecretKeyFromBase58("<your-private-key>")
+	sk, err := crypto.NewSecretKeyFromBase58("<your-private-key>")
 	if err != nil {
 		panic(err)
 	}
@@ -27,31 +27,28 @@ func main() {
 	ts := time.Now().Unix() * 1000
 
 	// Create new alias with blockchain byte 'T' for TestNet
-	alias, err := proto.NewAlias('T', "testnetnode2")
-	if err != nil {
-		panic(err)
-	}
+	alias := proto.NewAlias(proto.TestNetScheme, "testnetnode2")
 
 	// New CreateAlias Transaction
-	tx, err := proto.NewUnsignedCreateAliasV1(sender, *alias, 100000, uint64(ts))
+	tx := proto.NewUnsignedCreateAliasWithSig(pk, *alias, 100_000, uint64(ts))
+
+	// Sing the transaction with the private key
+	err = tx.Sign(proto.TestNetScheme, sk)
 	if err != nil {
 		panic(err)
 	}
-
-	// Sing the transaction with the private key
-	err = tx.Sign(pk)
 
 	// Here the trickiest part, we have to convert the transaction to the request,
 	// because the API accepts not the alias string representation, but alias value only
 	req := client.AliasBroadcastReq{
-		SenderPublicKey: sender,
+		SenderPublicKey: pk,
 		Fee:             tx.Fee,
 		Timestamp:       tx.Timestamp,
 		Signature:       *tx.Signature,
 		Alias:           tx.Alias.Alias,
 	}
 	// Create new HTTP client to send the transaction to public TestNet nodes
-	client, err := client.NewClient(client.Options{BaseUrl: "https://testnodes.wavesnodes.com", Client: &http.Client{}})
+	cl, err := client.NewClient(client.Options{BaseUrl: "https://testnodes.wavesnodes.com", Client: &http.Client{}})
 	if err != nil {
 		panic(err)
 	}
@@ -61,7 +58,7 @@ func main() {
 	defer cancel()
 
 	// Send the transaction to the network
-	_, _, err = client.Alias.Broadcast(ctx, req)
+	_, _, err = cl.Alias.Broadcast(ctx, req)
 	if err != nil {
 		panic(err)
 	}

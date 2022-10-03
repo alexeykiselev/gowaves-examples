@@ -36,7 +36,7 @@ func main() {
 	}
 
 	// Create new HTTP client to send the transaction to public TestNet nodes
-	cl, err := client.NewClient(client.Options{BaseUrl: "https://testnodes.wavesnodes.com", Client: &http.Client{}})
+	cl, err := client.NewClient(client.Options{BaseUrl: "https://nodes-testnet.wavesnodes.com", Client: &http.Client{}})
 	if err != nil {
 		panic(err)
 	}

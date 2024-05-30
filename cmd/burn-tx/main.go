@@ -32,7 +32,7 @@ func main() {
 	}
 
 	// New Burn Transaction
-	tx := proto.NewUnsignedBurnWithProofs(3, proto.TestNetScheme, pk, assetID, 500_00, ts, 1*waves)
+	tx := proto.NewUnsignedBurnWithProofs(3, pk, assetID, 500_00, ts, 1*waves)
 
 	// Sing the transaction with the private key
 	err = tx.Sign(proto.TestNetScheme, sk)

@@ -26,7 +26,7 @@ func main() {
 	ts := uint64(time.Now().UnixMilli())
 
 	// New Issue Transaction
-	tx := proto.NewUnsignedIssueWithProofs(3, proto.TestNetScheme, pk, "TestAsset", "Test Asset for Testnet",
+	tx := proto.NewUnsignedIssueWithProofs(3, pk, "TestAsset", "Test Asset for Testnet",
 		1000_00, 2, true, nil, ts, 1*waves)
 
 	// Sing the transaction with the private key

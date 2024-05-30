@@ -33,23 +33,19 @@ func main() {
 	rcp := proto.NewRecipientFromAddress(a)
 
 	// Create Function Call that will be passed to the script
-	fc := proto.FunctionCall{
-		Name: "foo",
-		Arguments: proto.Arguments{
-			proto.IntegerArgument{
-				Value: 12345,
-			},
-			proto.BooleanArgument{
-				Value: true,
-			},
+	fc := proto.NewFunctionCall("foo", proto.Arguments{
+		&proto.IntegerArgument{
+			Value: 12345,
 		},
-	}
+		&proto.BooleanArgument{
+			Value: true,
+		}})
 
 	// Current time in milliseconds
 	ts := time.Now().Unix() * 1000
 
 	// New InvokeScript Transaction
-	tx := proto.NewUnsignedInvokeScriptWithProofs(3, proto.TestNetScheme, pk, rcp, fc, proto.ScriptPayments{},
+	tx := proto.NewUnsignedInvokeScriptWithProofs(3, pk, rcp, fc, proto.ScriptPayments{},
 		proto.NewOptionalAssetWaves(), 500_000, uint64(ts))
 
 	// Sing the transaction with the private key

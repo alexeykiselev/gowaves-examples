@@ -32,7 +32,7 @@ func main() {
 	}
 
 	// New Reissue Transaction
-	tx := proto.NewUnsignedReissueWithProofs(3, proto.TestNetScheme, pk, assetID, 100_00, false, ts, 1*waves)
+	tx := proto.NewUnsignedReissueWithProofs(3, pk, assetID, 100_00, false, ts, 1*waves)
 
 	// Sing the transaction with the private key
 	err = tx.Sign(proto.TestNetScheme, sk)

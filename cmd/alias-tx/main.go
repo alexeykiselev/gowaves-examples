@@ -38,15 +38,6 @@ func main() {
 		panic(err)
 	}
 
-	// Here the trickiest part, we have to convert the transaction to the request,
-	// because the API accepts not the alias string representation, but alias value only
-	req := client.AliasBroadcastReq{
-		SenderPublicKey: pk,
-		Fee:             tx.Fee,
-		Timestamp:       tx.Timestamp,
-		Signature:       *tx.Signature,
-		Alias:           tx.Alias.Alias,
-	}
 	// Create new HTTP client to send the transaction to public TestNet nodes
 	cl, err := client.NewClient(client.Options{BaseUrl: "https://nodes-testnet.wavesnodes.com", Client: &http.Client{}})
 	if err != nil {
@@ -58,7 +49,7 @@ func main() {
 	defer cancel()
 
 	// Send the transaction to the network
-	_, _, err = cl.Alias.Broadcast(ctx, req)
+	_, err = cl.Transactions.Broadcast(ctx, tx)
 	if err != nil {
 		panic(err)
 	}
